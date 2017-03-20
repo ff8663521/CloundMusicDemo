@@ -8,7 +8,6 @@ import bean.Song;
  * 网易云单条评论格式
  * 根据评论json 获取
  * @author wxf
- *
  */
 public class CommentJson {
 	//用户账号信息，待二次 format
