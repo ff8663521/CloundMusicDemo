@@ -204,7 +204,7 @@ public class DetailsSong {
 		HttpPost post = new HttpPost(ajaxurl);
 		// 稍微遮掩一下
 		post.setHeader("User-Agent",
-				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393");
+				UA.getUA());
 		post.setHeader("Referer", song.getLink());
 		post.setHeader("Connection", "keep-alive");
 		// 封装参数
