@@ -91,7 +91,6 @@ public class Comment {
 		this.content = content;
 	}
 
-	@Override
 	public String toString() {
 		return "CommentJson [likedCount=" + likedCount + ", commentId=" + commentId + ", time=" + time + ", content="
 				+ content + "]";

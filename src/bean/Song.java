@@ -83,7 +83,6 @@ public class Song {
 	}
 	
 	
-	@Override
 	public String toString() {
 		return this.getName() + "  Á´½Ó£º"+this.getLink() + "    " +getId();
 	}

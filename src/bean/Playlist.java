@@ -61,7 +61,6 @@ public class Playlist {
 		this.num = num;
 	}
 
-	@Override
 	public String toString() {
 		return this.getName() + "*²¥·Å: " + this.getNum() + "´Î ,*Á´½Ó:"+this.getLink();
 	}
