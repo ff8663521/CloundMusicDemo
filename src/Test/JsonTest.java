@@ -31,7 +31,9 @@ public class JsonTest {
 	}
 	
 	public static void userTest(String s){
+		
 		UserJson user = JSON.parseObject(s,UserJson.class);
+		
 		System.out.println(user);
 	}
 	
