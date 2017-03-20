@@ -49,11 +49,13 @@ public class HttpClentTest {
 		HttpPost post = new HttpPost("https://passport.zhaopin.com/account/login");  
 		
 		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-		nvps.add(new BasicNameValuePair("Password", "12345678"));
+		
+		nvps.add(new BasicNameValuePair("Password", "*****"));
 		nvps.add(new BasicNameValuePair("RememberMe", "true"));
 		nvps.add(new BasicNameValuePair("errUrl", "https://passport.zhaopin.com/account/login"));
 		nvps.add(new BasicNameValuePair("int_count", "999"));
-		nvps.add(new BasicNameValuePair("loginname", "15600813381"));
+		
+		nvps.add(new BasicNameValuePair("loginname", "****"));
 		nvps.add(new BasicNameValuePair("requestFrom", "portal"));
 		
 		post.setEntity(new UrlEncodedFormEntity(nvps, "UTF-8")); 
@@ -73,8 +75,10 @@ public class HttpClentTest {
 		HttpPost post = new HttpPost("http://passport.zhaopin.com/account/login");
 		
 		List <NameValuePair> nvps = new ArrayList <NameValuePair>();
-		nvps.add(new BasicNameValuePair("LoginName", "ff8663521@163.com"));
-		nvps.add(new BasicNameValuePair("Password", "breakout0536"));
+		
+		nvps.add(new BasicNameValuePair("LoginName", "****"));
+		nvps.add(new BasicNameValuePair("Password", "****"));
+		
 		nvps.add(new BasicNameValuePair("RememberMe", "true"));
 		nvps.add(new BasicNameValuePair("RememberMe", "flase"));
 		nvps.add(new BasicNameValuePair("bkurl", ""));
