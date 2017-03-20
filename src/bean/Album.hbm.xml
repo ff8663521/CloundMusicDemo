@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="bean">
+	<class name="Album" table="album">
+		<id name="id" type="integer" column="id">
+			<generator class="assigned" />
+		</id>
+		<property name="name" type="string">
+			<column name="name" />
+		</property>
+		<many-to-one name="artist" class="Artist" fetch="select" lazy="false">
+			<column name="artist" precision="8" scale="0" />
+		</many-to-one>
+	</class>
+
+</hibernate-mapping>

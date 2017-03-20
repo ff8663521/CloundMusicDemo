@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="bean">
+	<class name="Comment" table="comment">
+		<id name="commentId" type="integer" column="commentId">
+			<generator class="assigned" />
+		</id>
+		<property name="likedCount" type="integer">
+			<column name="likedCount" />
+		</property>
+		<property name="content" type="string">
+			<column name="content" />
+		</property>
+		<property name="time" type="date">
+			<column name="time" />
+		</property>
+		<many-to-one name="song" class="Song" fetch="select" lazy="false">
+			<column name="song" precision="8" scale="0" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>

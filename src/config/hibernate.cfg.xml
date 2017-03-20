@@ -1,0 +1,19 @@
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="connection.username">root</property>
+		<property name="connection.password">123456</property>
+		<property name="connection.url">jdbc:mysql://127.0.0.1:3306/forlearn</property>
+		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+<!-- 		<property name="show_sql">true</property> -->
+<!-- 		<property name="format_sql">true</property> -->
+		<property name="hbm2ddl.auto">update</property>
+		
+		<mapping resource="bean/Playlist.hbm.xml"/>
+		<mapping resource="bean/Album.hbm.xml"/>
+		<mapping resource="bean/Artist.hbm.xml"/>
+		<mapping resource="bean/Song.hbm.xml"/>
+		<mapping resource="bean/Comment.hbm.xml"/>
+	</session-factory>
+</hibernate-configuration>
