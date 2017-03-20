@@ -21,7 +21,7 @@ public class Comment {
 	private int likedCount;
 	
 	//评论id
-	private int commentId;
+	private String commentId;
 	
 	//是否喜欢？可能和是否登陆，是否赞过有关？和用户行为有关？
 	private boolean liked;
@@ -59,11 +59,11 @@ public class Comment {
 		this.likedCount = likedCount;
 	}
 
-	public int getCommentId() {
+	public String getCommentId() {
 		return commentId;
 	}
 
-	public void setCommentId(int commentId) {
+	public void setCommentId(String commentId) {
 		this.commentId = commentId;
 	}
 

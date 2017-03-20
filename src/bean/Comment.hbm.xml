@@ -5,7 +5,7 @@
 
 <hibernate-mapping package="bean">
 	<class name="Comment" table="comment">
-		<id name="commentId" type="integer" column="commentId">
+		<id name="commentId" type="string" column="commentId">
 			<generator class="assigned" />
 		</id>
 		<property name="likedCount" type="integer">
