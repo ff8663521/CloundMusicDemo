@@ -229,7 +229,7 @@ public class DetailsSong {
 		// 对Json进行format，获取总评论信息
 		CommentsJson coms = JSON.parseObject(content1, CommentsJson.class);
 		song.setNum(coms.getTotal());
-
+		
 		// 获取热门评论
 		List<Comment> list_comment = JSON.parseArray(coms.getHotComments(), Comment.class);
 
