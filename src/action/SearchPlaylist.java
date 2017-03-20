@@ -22,6 +22,11 @@ import dao.IPlaylistDao;
 import dao.impl.PlaylistDao;
 import dao.utils.StringUtils;
 
+/**
+ * 歌单列表页处理action
+ * @author wxf
+ *
+ */
 public class SearchPlaylist {
 	// 创建模拟客户端
 	private static CloseableHttpClient client = HttpClients.createDefault();

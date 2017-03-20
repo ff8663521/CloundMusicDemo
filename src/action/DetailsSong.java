@@ -41,6 +41,11 @@ import dao.impl.SongDao;
 import dao.utils.UA;
 import fromatbean.CommentsJson;
 
+/**
+ * 歌曲详情页处理action
+ * @author wxf
+ *
+ */
 public class DetailsSong {
 	// 创建模拟客户端
 	private static CloseableHttpClient client = HttpClients.createDefault();
