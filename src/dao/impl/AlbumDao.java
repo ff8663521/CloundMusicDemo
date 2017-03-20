@@ -9,7 +9,6 @@ import dao.utils.Hibernate4Util;
 
 public class AlbumDao implements IAlbumDao {
 
-	@Override
 	public void save(Album album) {
 		Session session = Hibernate4Util.getCurrentSession();
 		Transaction ts = session.beginTransaction();
