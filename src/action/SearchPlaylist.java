@@ -20,6 +20,7 @@ import org.jsoup.nodes.Element;
 import bean.Playlist;
 import dao.IPlaylistDao;
 import dao.impl.PlaylistDao;
+import dao.utils.DuplicateRemovalUtils;
 import dao.utils.StringUtils;
 
 /**
@@ -41,8 +42,8 @@ public class SearchPlaylist {
 	public static void main(String[] args) {
 		// 目标地址
 		//获取全部歌单
-		String listURL = "http://music.163.com/discover/playlist/?cat=%E6%AC%A7%E7%BE%8E&order=hot";
-
+		String listURL = "http://music.163.com/discover/playlist/?cat=%E6%B5%81%E8%A1%8C&order=hot";
+		
 		HttpGet get = new HttpGet(listURL);
 		// 接收响应
 		CloseableHttpResponse response = null;
@@ -74,7 +75,7 @@ public class SearchPlaylist {
 		String page_s = list_page.get(list_page.size() - 1).text();
 		int page = Integer.parseInt(page_s);
 		//分页url
-		String url ="http://music.163.com/discover/playlist/?order=hot&cat=%E6%AC%A7%E7%BE%8E&limit=35&offset=";
+		String url ="http://music.163.com/discover/playlist/?order=hot&cat=%E6%B5%81%E8%A1%8C&limit=35&offset=";
 		
 		System.out.println("总共："+page +"页");
 		for (int i = 0; i < page; i++) {
@@ -125,7 +126,10 @@ public class SearchPlaylist {
 		// 获取歌单播放次数
 		List<Element> list_b = doc.select("span.nb");
 		List<Playlist> playlist = new ArrayList<Playlist>();
-
+		
+		//整理抓取歌单id字符串，去重使用
+		StringBuilder sbd = new StringBuilder();
+		
 		 for (int i = 0; i < list_a.size(); i++) {
 			 Playlist play = new Playlist();
 			 Element e1 = list_a.get(i);
@@ -138,6 +142,10 @@ public class SearchPlaylist {
 			} catch (Exception e) {
 				id_s ="0";
 			}
+			 //记录ID，去重使用
+			 sbd.append(id_s);
+			 sbd.append(",");
+			 
 			 Integer id = Integer.parseInt(id_s);
 			 String title =StringUtils.replaceNUll(e1.attr("title"), "无名") ;
 			
@@ -157,6 +165,14 @@ public class SearchPlaylist {
 			 playlist.add(play);
 		
 		 }
+		 
+		 //此次抓取的全部歌单ID
+		 String id_connect=sbd.append(0).toString();
+		 //获取数据库已存在的歌单
+		 List<Playlist> hasPL = playlistDao.getPlaylistByIds(id_connect);
+		 //去重
+		 playlist = DuplicateRemovalUtils.remove(playlist, hasPL);
+		 
 		 //保存歌单至数据库
 		 playlistDao.batchSave(playlist);
 		 

@@ -15,5 +15,7 @@ public interface IPlaylistDao {
 	public int Count();
 	
 	public List<Playlist> getAllPlaylistByPage(Integer page,int rows) ;
+	
+	public List<Playlist> getPlaylistByIds(String ids);
 
 }

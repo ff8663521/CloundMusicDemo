@@ -25,6 +25,7 @@ import dao.IPlaylistDao;
 import dao.ISongDao;
 import dao.impl.PlaylistDao;
 import dao.impl.SongDao;
+import dao.utils.DuplicateRemovalUtils;
 import dao.utils.StringUtils;
 
 /**
@@ -140,6 +141,9 @@ public class DetailsPlaylist {
 		List<Element> list_s = doc.select("ul.f-hide a");
 		List<Song> songlist = new ArrayList<Song>();
 		
+		//整理抓取歌曲id字符串，去重使用
+		StringBuilder sbd4s = new StringBuilder();
+		
 		Song song = null;
 		for (Element e : list_s) {
 			 String link =StringUtils.replaceNUll(e.attr("href"), "");
@@ -149,6 +153,10 @@ public class DetailsPlaylist {
 			 } catch (Exception ex) {
 				id_s ="0";
 			 }
+			//记录ID，去重使用
+			 sbd4s.append(id_s);
+			 sbd4s.append(",");
+			 
 			 Integer id = Integer.parseInt(id_s);
 			 String name =StringUtils.replaceNUll(e.text(), "无名") ;
 			
@@ -159,8 +167,17 @@ public class DetailsPlaylist {
 			 songlist.add(song);
 		}
 		
+		// 此次抓取的全部歌曲ID
+		String id_connect = sbd4s.append(0).toString();
+		// 获取数据库已存在的歌曲
+		List<Song> hasS = songDao.getPlaylistByIds(id_connect);
+		// 去重
+		songlist = DuplicateRemovalUtils.remove(songlist, hasS);
+		 
+		System.out.println("去重歌曲："+hasS.size()+"首,"+"剩余歌曲："+songlist.size()+"首");
 		songDao.batchSave(songlist);
-		System.out.println(pl.getNum() +"finish==============");
+		
+		System.out.println(pl.getName() +"finish==============");
 	}
 	
 	

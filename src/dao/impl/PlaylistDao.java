@@ -115,4 +115,23 @@ public class PlaylistDao implements IPlaylistDao {
 		return list;
 	}
 
+	@Override
+	public List<Playlist> getPlaylistByIds(String ids) {
+		Session session = Hibernate4Util.getCurrentSession();
+
+		List<Playlist> list = new ArrayList<Playlist>();
+
+		StringBuilder strhql = new StringBuilder("from Playlist where 1=1");
+		strhql.append(" and id in (").append(ids).append(")");
+
+		try {
+			Query query = session.createQuery(strhql.toString());
+			list = query.list();
+		} catch (Exception e) {
+		} finally {
+			Hibernate4Util.closeSession(session);
+		}
+		return list;
+	}
+
 }

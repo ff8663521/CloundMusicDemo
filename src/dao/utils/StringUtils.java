@@ -1,5 +1,10 @@
 package dao.utils;
 
+import java.util.List;
+
+import bean.Playlist;
+import bean.Song;
+
 public class StringUtils {
 	
 	/**
