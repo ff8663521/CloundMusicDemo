@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpEntity;
@@ -25,6 +30,7 @@ import org.jsoup.nodes.Element;
 
 import com.alibaba.fastjson.JSON;
 
+import action.thread.song.ExcuteThread;
 import bean.Album;
 import bean.Artist;
 import bean.Comment;
@@ -56,6 +62,10 @@ public class DetailsSong {
 	private static IArtistDao artistDao;
 	private static ICommentDao commentDao;
 
+	private static CyclicBarrier barrier;
+	
+	private static ExecutorService exec = Executors.newCachedThreadPool();
+	
 	static {
 		songDao = new SongDao();
 		albumDao = new AlbumDao();
@@ -65,42 +75,68 @@ public class DetailsSong {
 
 	public static void main(String[] args) throws InterruptedException {
 		// 计算分页
-		int allCount = songDao.Count();
-		int rows = 100;
-		int page = 0;
-		if (allCount % rows == 0) {
-			page = allCount / rows;
-		} else {
-			page = allCount / rows + 1;
-		}
+//		int allCount = songDao.Count();
+//		int rows = 100;
+//		int page = 0;
+//		if (allCount % rows == 0) {
+//			page = allCount / rows;
+//		} else {
+//			page = allCount / rows + 1;
+//		}
+//		
+//		System.out.println("总共："+page +"页");
 		
-		System.out.println("总共："+page +"页");
-		for (int i = 1; i <=page; i++) {
-			List<Song> list =songDao.getAllSongByPage(i, rows);
+		List<Song> list =songDao.getAll();
+		
+		LinkedBlockingQueue<Song> que =  new LinkedBlockingQueue<Song>(list);
+		
+		//开启5条线程
+		barrier = new CyclicBarrier(5, new Runnable() {
 			
-			int countNum = 0;
-			for (Song song : list) {
-				countNum++;
-				getSongDetails(song);
+			public void run() {
 				
-				//每10次休息1秒，保证非暴力爬虫被封IP
-				if(countNum%20 == 0){
-					TimeUnit.SECONDS.sleep(1);
+				int allCount = songDao.Count();
+				
+				System.out.println("还剩"+allCount + "首");
+				
+				if(allCount == 0){
+					exec.shutdownNow();
+					System.out.println("抓取完成");
+					return;
+				}
+				
+				try {
+					//每次所有线程执行完，休息3秒;
+					TimeUnit.SECONDS.sleep(3);
+				} catch (InterruptedException e) {
+					System.out.println("总控中断！");
 				}
 			}
-			
-			System.out.println("==========================第 "+ i +"页，已经完成" );
+		});
+		
+		for (int i = 0; i < 5; i++) {
+			ExcuteThread et = new ExcuteThread(que,barrier);
+			exec.execute(et);
 		}
 		
-//		Song song = new Song();
-//		
-//		song.setId(429450375);
-//		song.setName("来日方长");
-//		song.setLink("http://music.163.com/song?id=429450375");
-//		song.setNum(44610);
-//		
-//		
-//		getSongDetails(song);
+		
+//		for (int i = 1; i <=page; i++) {
+//			List<Song> list =songDao.getAllSongByPage(i, rows);
+//			
+//			int countNum = 0;
+//			for (Song song : list) {
+//				countNum++;
+//				getSongDetails(song);
+//				
+//				//每10次休息1秒，保证非暴力爬虫被封IP
+//				if(countNum%20 == 0){
+//					TimeUnit.SECONDS.sleep(1);
+//				}
+//			}
+//			
+//			System.out.println("==========================第 "+ i +"页，已经完成" );
+//		}
+		
 	}
 
 	public static void getSongDetails(Song song) {
@@ -144,8 +180,11 @@ public class DetailsSong {
 		List<Element> list_s = doc.select("p.des a");
 		if(list_s.size() == 0){
 			System.out.println("**********************这首歌未能抓取************************");
+			//为页面丢失404 歌曲，稍后删除
 			System.out.println(song);
-			System.out.println("**********************这首歌未能抓取************************");
+			//删除
+			songDao.delete(song);
+			System.out.println("**********************这首歌未能抓取，已删除************************");
 			return;
 		}
 		// 配置歌手信息
