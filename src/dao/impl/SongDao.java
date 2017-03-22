@@ -134,4 +134,39 @@ public class SongDao implements ISongDao {
 		}
 		return list;
 	}
+
+	@Override
+	public void delete(Song song) {
+		Session session = Hibernate4Util.getCurrentSession();
+		Transaction ts = session.beginTransaction();
+		try {
+			session.delete(song);
+			ts.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			ts.rollback();
+		} finally {
+			Hibernate4Util.closeSession();
+		}
+		
+	}
+
+	@Override
+	public List<Song> getAll() {
+		Session session = Hibernate4Util.getCurrentSession();
+
+		List<Song> list = new ArrayList<Song>();
+
+		StringBuilder strhql = new StringBuilder("from Song where 1=1 and artist is null");
+
+		try {
+			Query query = session.createQuery(strhql.toString());
+			list = query.list();
+		} catch (Exception e) {
+		} finally {
+			Hibernate4Util.closeSession();
+		}
+		
+		return list;
+	}
 }
