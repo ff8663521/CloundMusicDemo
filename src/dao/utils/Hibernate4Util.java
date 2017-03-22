@@ -43,8 +43,8 @@ public class Hibernate4Util {
 		// 获取当前线程下的SESSION
 		Session s = session.get();
         if (s != null) {
-            // s.close();
         	//这里无需将Session关闭，因为该Session是保存在当前线程//中的，线程执行完毕Session自然会销毁
+             s.close();
             session.set(null);// 将当前线程中的会话清除
         }
 	}
