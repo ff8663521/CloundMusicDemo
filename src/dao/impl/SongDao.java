@@ -25,7 +25,7 @@ public class SongDao implements ISongDao {
 			e.printStackTrace();
 			ts.rollback();
 		} finally {
-			Hibernate4Util.closeSession(session);
+			Hibernate4Util.closeSession();
 		}
 
 	}
@@ -51,7 +51,7 @@ public class SongDao implements ISongDao {
 			e.printStackTrace();
 			ts.rollback();
 		} finally {
-			Hibernate4Util.closeSession(session);
+			Hibernate4Util.closeSession();
 		}
 
 	}
@@ -67,7 +67,7 @@ public class SongDao implements ISongDao {
 			e.printStackTrace();
 			ts.rollback();
 		} finally {
-			Hibernate4Util.closeSession(session);
+			Hibernate4Util.closeSession();
 		}
 
 	}
@@ -90,7 +90,7 @@ public class SongDao implements ISongDao {
 			}
 		} catch (Exception e) {
 		} finally {
-			Hibernate4Util.closeSession(session);
+			Hibernate4Util.closeSession();
 		}
 
 		return result;
@@ -111,7 +111,7 @@ public class SongDao implements ISongDao {
 			list = query.list();
 		} catch (Exception e) {
 		} finally {
-			Hibernate4Util.closeSession(session);
+			Hibernate4Util.closeSession();
 		}
 		return list;
 	}
@@ -130,7 +130,7 @@ public class SongDao implements ISongDao {
 			list = query.list();
 		} catch (Exception e) {
 		} finally {
-			Hibernate4Util.closeSession(session);
+			Hibernate4Util.closeSession();
 		}
 		return list;
 	}

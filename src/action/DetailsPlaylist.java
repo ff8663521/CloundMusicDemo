@@ -2,8 +2,10 @@ package action;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpEntity;
@@ -19,6 +21,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import action.thread.dplaylist.ResultThread;
+import action.thread.dplaylist.ExcuteThread;
 import bean.Playlist;
 import bean.Song;
 import dao.IPlaylistDao;
@@ -60,22 +64,47 @@ public class DetailsPlaylist {
 		}
 		
 		System.out.println("总共："+page +"页");
+		
+		//创建多线程管理
+		ExecutorService exec = Executors.newCachedThreadPool();
+		
 		for (int i = 1; i <= page; i++) {
 			List<Playlist> list =playlistDao.getAllPlaylistByPage(i, rows);
-			//计数变量
-			int countNum = 0;
-			for (Playlist pl : list) {
-				countNum++;
-				
-				getSongsByPlaylist(pl);
-				
-				//每10次休息三秒，保证非暴力爬虫被封IP
-				if(countNum%10 == 0){
-					TimeUnit.SECONDS.sleep(3);
+			
+			// 创建计数
+			CountDownLatch latch = new CountDownLatch(list.size());
+			
+			exec.execute(new ResultThread(latch,i));
+			
+			for (int j = 0; j < list.size(); j++){
+				try {
+					//多线程速度过快，每5条线程间隔3秒创建一次,避免hibernate session 支撑不住
+					if(i%5 == 0){
+						TimeUnit.SECONDS.sleep(3);
+					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
+				
+				exec.execute(new ExcuteThread(latch,list));
 			}
 			
-			System.out.println("第 "+ i +"页，已经完成" );
+			ExcuteThread.resetCount();
+			
+			//计数变量
+//			int countNum = 0;
+//			for (Playlist pl : list) {
+//				countNum++;
+//				
+//				getSongsByPlaylist(pl);
+//				
+//				//每10次休息三秒，保证非暴力爬虫被封IP
+//				if(countNum%10 == 0){
+//					TimeUnit.SECONDS.sleep(3);
+//				}
+//			}
+//			
+//			System.out.println("第 "+ i +"页，已经完成" );
 		}
 		
 	}
@@ -176,8 +205,6 @@ public class DetailsPlaylist {
 		 
 		System.out.println("去重歌曲："+hasS.size()+"首,"+"剩余歌曲："+songlist.size()+"首");
 		songDao.batchSave(songlist);
-		
-		System.out.println(pl.getName() +"finish==============");
 	}
 	
 	

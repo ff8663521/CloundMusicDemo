@@ -19,7 +19,7 @@ public class AlbumDao implements IAlbumDao {
 			e.printStackTrace();
 			ts.rollback();
 		}finally{
-			Hibernate4Util.closeSession(session);
+			Hibernate4Util.closeSession();
 		}
 
 	}

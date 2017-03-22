@@ -20,7 +20,7 @@ public class ArtistDao implements IArtistDao {
 			e.printStackTrace();
 			ts.rollback();
 		}finally{
-			Hibernate4Util.closeSession(session);
+			Hibernate4Util.closeSession();
 		}
 
 

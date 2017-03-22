@@ -24,7 +24,7 @@ public class PlaylistDao implements IPlaylistDao {
 			e.printStackTrace();
 			ts.rollback();
 		}finally{
-			Hibernate4Util.closeSession(session);
+			Hibernate4Util.closeSession();
 		}
 
 	}
@@ -50,7 +50,7 @@ public class PlaylistDao implements IPlaylistDao {
 			e.printStackTrace();
 			ts.rollback();
 		}finally{
-			Hibernate4Util.closeSession(session);
+			Hibernate4Util.closeSession();
 		}
 	}
 
@@ -65,7 +65,7 @@ public class PlaylistDao implements IPlaylistDao {
 			e.printStackTrace();
 			ts.rollback();
 		}finally{
-			Hibernate4Util.closeSession(session);
+			Hibernate4Util.closeSession();
 		}
 		
 	}
@@ -87,7 +87,7 @@ public class PlaylistDao implements IPlaylistDao {
 			}
 		} catch (Exception e) {
 		}finally{
-			Hibernate4Util.closeSession(session);
+			Hibernate4Util.closeSession();
 		}
 		
 		return result;
@@ -110,7 +110,7 @@ public class PlaylistDao implements IPlaylistDao {
 			list = query.list();
 		} catch (Exception e) {
 		}finally{
-			Hibernate4Util.closeSession(session);
+			Hibernate4Util.closeSession();
 		}
 		return list;
 	}
@@ -129,7 +129,7 @@ public class PlaylistDao implements IPlaylistDao {
 			list = query.list();
 		} catch (Exception e) {
 		} finally {
-			Hibernate4Util.closeSession(session);
+			Hibernate4Util.closeSession();
 		}
 		return list;
 	}

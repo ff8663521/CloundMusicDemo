@@ -27,7 +27,7 @@ public class CommentDao implements ICommentDao {
 			e.printStackTrace();
 			ts.rollback();
 		}finally{
-			Hibernate4Util.closeSession(session);
+			Hibernate4Util.closeSession();
 		}
 
 	}

@@ -3,6 +3,10 @@ package action;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
@@ -17,11 +21,14 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import action.thread.playlist.ResultThread;
+import action.thread.playlist.ExcuteThread;
 import bean.Playlist;
 import dao.IPlaylistDao;
 import dao.impl.PlaylistDao;
 import dao.utils.DuplicateRemovalUtils;
 import dao.utils.StringUtils;
+import dao.utils.UA;
 
 /**
  * 歌单列表页处理action
@@ -35,6 +42,7 @@ public class SearchPlaylist {
 	
 	private static IPlaylistDao playlistDao;
 	
+	
 	static {
 		playlistDao = new PlaylistDao();;
 	}
@@ -42,7 +50,7 @@ public class SearchPlaylist {
 	public static void main(String[] args) {
 		// 目标地址
 		//获取全部歌单
-		String listURL = "http://music.163.com/discover/playlist/?cat=%E6%B5%81%E8%A1%8C&order=hot";
+		String listURL = "http://music.163.com/discover/playlist/?cat=%E9%9F%A9%E8%AF%AD&order=hot";
 		
 		HttpGet get = new HttpGet(listURL);
 		// 接收响应
@@ -74,22 +82,49 @@ public class SearchPlaylist {
 		List<Element> list_page = doc.select("a.zpgi");
 		String page_s = list_page.get(list_page.size() - 1).text();
 		int page = Integer.parseInt(page_s);
+		
 		//分页url
-		String url ="http://music.163.com/discover/playlist/?order=hot&cat=%E6%B5%81%E8%A1%8C&limit=35&offset=";
+		String url ="http://music.163.com/discover/playlist/?order=hot&cat=%E9%9F%A9%E8%AF%AD&limit=35&offset=";
 		
 		System.out.println("总共："+page +"页");
-		for (int i = 0; i < page; i++) {
-			String item_url = url+(i*35);
-			System.out.println(item_url);
-			getPlaylist(item_url);
-			System.out.println("第 "+ i +"页，已经完成" );
+		
+		//创建多线程管理
+		ExecutorService exec = Executors.newCachedThreadPool();
+		
+		// 创建计数
+		CountDownLatch latch = new CountDownLatch(page);
+		
+		exec.execute(new ResultThread(latch));
+		
+		for (int i = 0; i < page; i++){
 			
+			try {
+				//多线程速度过快，每5条线程间隔3秒创建一次,避免hibernate session 支撑不住
+				if(i%5 == 0){
+					TimeUnit.SECONDS.sleep(3);
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			exec.execute(new ExcuteThread(latch,url));
 		}
+		
+		//所有线程结束后，结束线程池
+		exec.shutdown();
+		
+		//单线程逻辑
+//		for (int i = 0; i < page; i++) {
+//			String item_url = url+(i*35);
+//			System.out.println(item_url);
+//			getPlaylist(item_url);
+//			System.out.println("第 "+ i +"页，已经完成" );
+//			
+//		}
 	}
 
 	public static void getPlaylist(String url) {
 		HttpGet get = new HttpGet(url);
-		get.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
+		get.setHeader("User-Agent", UA.getUA());
 		get.setHeader("Referer", "http://music.163.com/");
 		get.addHeader("Connection","keep-alive");
 
@@ -173,6 +208,7 @@ public class SearchPlaylist {
 		 //去重
 		 playlist = DuplicateRemovalUtils.remove(playlist, hasPL);
 		 
+		 System.out.println("去重歌单："+hasPL.size()+","+"剩余歌单："+playlist.size());
 		 //保存歌单至数据库
 		 playlistDao.batchSave(playlist);
 		 

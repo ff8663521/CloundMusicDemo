@@ -9,8 +9,11 @@ import org.hibernate.service.ServiceRegistryBuilder;
 public class Hibernate4Util {
 
 	private static SessionFactory sessionFactory;
-	private static Session session;
-
+	
+//	private static Session session;
+	
+	public static final ThreadLocal<Session> session =  new ThreadLocal<Session>();  
+	
 	static {
 		// 创建Configuration,该对象用于读取hibernate.cfg.xml，并完成初始化
 		 Configuration cfg = new Configuration().configure("/config/hibernate.cfg.xml"); 
@@ -28,15 +31,22 @@ public class Hibernate4Util {
 	}
 
 	public static Session getCurrentSession() {
-		session = sessionFactory.openSession();
-		return session;
+		Session s = session.get();
+		if (s == null) {
+			s = sessionFactory.openSession();
+			session.set(s);
+		}
+		return s; 
 	}
 
-	public static void closeSession(Session session) {
-
-		if (null != session) {
-			session.close();
-		}
+	public static void closeSession() {
+		// 获取当前线程下的SESSION
+		Session s = session.get();
+        if (s != null) {
+            // s.close();
+        	//这里无需将Session关闭，因为该Session是保存在当前线程//中的，线程执行完毕Session自然会销毁
+            session.set(null);// 将当前线程中的会话清除
+        }
 	}
 
 }
