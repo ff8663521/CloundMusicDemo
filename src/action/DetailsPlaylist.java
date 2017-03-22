@@ -73,7 +73,7 @@ public class DetailsPlaylist {
 			
 			// 创建计数
 			CountDownLatch latch = new CountDownLatch(list.size());
-			
+			// 加入通报类
 			exec.execute(new ResultThread(latch,i));
 			
 			for (int j = 0; j < list.size(); j++){
@@ -85,10 +85,11 @@ public class DetailsPlaylist {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				
+				//执行类
 				exec.execute(new ExcuteThread(latch,list));
 			}
 			
+			//当前list 全部分配完线程,执行类计数归零。
 			ExcuteThread.resetCount();
 			
 			//计数变量

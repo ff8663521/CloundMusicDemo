@@ -93,7 +93,7 @@ public class SearchPlaylist {
 		
 		// 创建计数
 		CountDownLatch latch = new CountDownLatch(page);
-		
+		//加入通报类
 		exec.execute(new ResultThread(latch));
 		
 		for (int i = 0; i < page; i++){
@@ -106,6 +106,7 @@ public class SearchPlaylist {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			//加入执行类
 			exec.execute(new ExcuteThread(latch,url));
 		}
 		
