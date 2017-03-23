@@ -14,6 +14,8 @@ public interface ISongDao {
 	
 	public int Count();
 	
+	public int Count(int index);
+	
 	public List<Song> getAllSongByPage(Integer page,int rows) ;
 	
 	public List<Song> getPlaylistByIds(String ids);
@@ -21,4 +23,6 @@ public interface ISongDao {
 	public void delete(Song song);
 	
 	public List<Song> getAll();
+	
+	public List<Song> getAll(Integer page,int rows);
 }

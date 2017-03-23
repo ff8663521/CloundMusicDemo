@@ -169,4 +169,50 @@ public class SongDao implements ISongDao {
 		
 		return list;
 	}
+
+	@Override
+	public List<Song> getAll(Integer page,int rows) {
+		Session session = Hibernate4Util.getCurrentSession();
+
+		List<Song> list = new ArrayList<Song>();
+
+		StringBuilder strhql = new StringBuilder("from Song where 1=1 ");
+
+		try {
+			Query query = session.createQuery(strhql.toString());
+			query.setMaxResults(rows);
+			query.setFirstResult((page - 1) * rows);
+			list = query.list();
+		} catch (Exception e) {
+		} finally {
+			Hibernate4Util.closeSession();
+		}
+		return list;
+	}
+
+	@Override
+	/**
+	 * 统计全部歌曲使用
+	 * index 标志。带重构方法
+	 */
+	public int Count(int index) {
+		Session session = Hibernate4Util.getCurrentSession();
+
+		int result = 0;
+		StringBuilder strhql = new StringBuilder("select count(id)");
+		strhql.append(" from Song t");
+
+		try {
+			Query query = session.createQuery(strhql.toString());
+			List<Long> count = session.createQuery(strhql.toString()).list();
+			if (count != null) {
+				result = count.get(0).intValue();
+			}
+		} catch (Exception e) {
+		} finally {
+			Hibernate4Util.closeSession();
+		}
+
+		return result;
+	}
 }

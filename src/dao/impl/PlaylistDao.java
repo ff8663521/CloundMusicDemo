@@ -134,4 +134,46 @@ public class PlaylistDao implements IPlaylistDao {
 		return list;
 	}
 
+	@Override
+	public int Count(int index) {
+		Session session = Hibernate4Util.getCurrentSession();
+
+		int result = 0;
+		StringBuilder strhql = new StringBuilder("select count(id)");
+		strhql.append(" from Playlist t");
+
+		try {
+			Query query = session.createQuery(strhql.toString());
+			List<Long> count = session.createQuery(strhql.toString()).list();
+			if (count != null) {
+				result = count.get(0).intValue();
+			}
+		} catch (Exception e) {
+		} finally {
+			Hibernate4Util.closeSession();
+		}
+
+		return result;
+	}
+
+	@Override
+	public List<Playlist> getAll(Integer page, int rows) {
+		Session session = Hibernate4Util.getCurrentSession();
+
+		List<Playlist> list = new ArrayList<Playlist>();
+
+		StringBuilder strhql = new StringBuilder("from Playlist where 1=1 ");
+
+		try {
+			Query query = session.createQuery(strhql.toString());
+			query.setMaxResults(rows);
+			query.setFirstResult((page - 1) * rows);
+			list = query.list();
+		} catch (Exception e) {
+		} finally {
+			Hibernate4Util.closeSession();
+		}
+		return list;
+	}
+
 }
