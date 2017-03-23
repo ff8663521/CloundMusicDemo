@@ -23,6 +23,8 @@
 	<classpathentry kind="lib" path="E:/JAR/hibernate-release-4.2.21.Final/lib/required/jboss-transaction-api_1.1_spec-1.0.1.Final.jar"/>
 	<classpathentry kind="lib" path="E:/JAR/mysql-connector-java-5.1.18/mysql-connector-java-5.1.18-bin.jar"/>
 	<classpathentry kind="lib" path="E:/JAR/json解析包/fastjson-1.2.8.jar"/>
+	<classpathentry kind="lib" path="E:/JAR/jedis/jedis-2.1.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="E:/JAR/jedis/连接池依赖/commons-pool-1.5.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
-	
 </classpath>
