@@ -24,11 +24,13 @@ import org.jsoup.nodes.Element;
 import action.thread.playlist.ResultThread;
 import action.thread.playlist.ExcuteThread;
 import bean.Playlist;
+import bean.Song;
 import dao.IPlaylistDao;
 import dao.impl.PlaylistDao;
 import dao.utils.DuplicateRemovalUtils;
 import dao.utils.StringUtils;
 import dao.utils.UA;
+import redis.RedisUtils;
 
 /**
  * 歌单列表页处理action
@@ -49,8 +51,7 @@ public class SearchPlaylist {
 	
 	public static void main(String[] args) {
 		// 目标地址
-		//获取全部歌单
-		String listURL = "http://music.163.com/discover/playlist/?cat=%E9%9F%A9%E8%AF%AD&order=hot";
+		String listURL = "http://music.163.com/discover/playlist/?cat=%E6%B0%91%E8%B0%A3&order=hot";
 		
 		HttpGet get = new HttpGet(listURL);
 		// 接收响应
@@ -84,7 +85,7 @@ public class SearchPlaylist {
 		int page = Integer.parseInt(page_s);
 		
 		//分页url
-		String url ="http://music.163.com/discover/playlist/?order=hot&cat=%E9%9F%A9%E8%AF%AD&limit=35&offset=";
+		String url ="http://music.163.com/discover/playlist/?order=hot&cat=%E6%B0%91%E8%B0%A3&limit=35&offset=";
 		
 		System.out.println("总共："+page +"页");
 		
@@ -163,8 +164,8 @@ public class SearchPlaylist {
 		List<Element> list_b = doc.select("span.nb");
 		List<Playlist> playlist = new ArrayList<Playlist>();
 		
-		//整理抓取歌单id字符串，去重使用
-		StringBuilder sbd = new StringBuilder();
+//		//整理抓取歌单id字符串，去重使用
+//		StringBuilder sbd = new StringBuilder();
 		
 		 for (int i = 0; i < list_a.size(); i++) {
 			 Playlist play = new Playlist();
@@ -178,9 +179,9 @@ public class SearchPlaylist {
 			} catch (Exception e) {
 				id_s ="0";
 			}
-			 //记录ID，去重使用
-			 sbd.append(id_s);
-			 sbd.append(",");
+//			 //记录ID，去重使用
+//			 sbd.append(id_s);
+//			 sbd.append(",");
 			 
 			 Integer id = Integer.parseInt(id_s);
 			 String title =StringUtils.replaceNUll(e1.attr("title"), "无名") ;
@@ -202,17 +203,24 @@ public class SearchPlaylist {
 		
 		 }
 		 
-		 //此次抓取的全部歌单ID
-		 String id_connect=sbd.append(0).toString();
-		 //获取数据库已存在的歌单
-		 List<Playlist> hasPL = playlistDao.getPlaylistByIds(id_connect);
-		 //去重
-		 playlist = DuplicateRemovalUtils.remove(playlist, hasPL);
+//		 //此次抓取的全部歌单ID
+//		 String id_connect=sbd.append(0).toString();
+//		 //获取数据库已存在的歌单
+//		 List<Playlist> hasPL = playlistDao.getPlaylistByIds(id_connect);
+//		 //去重
+//		 playlist = DuplicateRemovalUtils.remove(playlist, hasPL);
+//		 System.out.println("去重歌单："+hasPL.size()+","+"剩余歌单："+playlist.size());
 		 
-		 System.out.println("去重歌单："+hasPL.size()+","+"剩余歌单："+playlist.size());
+		/**
+		 * 通过redis song 记录表来查询 进行去重
+		 */
+		List<Playlist> forSave = RedisUtils.dealHavenPlayList(playlist);
+		 
 		 //保存歌单至数据库
 		 playlistDao.batchSave(playlist);
 		 
+		//添加到redis 数据库
+		RedisUtils.savePlaylists(forSave);
 	}
 
 }
